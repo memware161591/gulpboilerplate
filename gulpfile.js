@@ -2,11 +2,13 @@
 "use strict";
 
 var gulp = require("gulp"),
-  rimraf = require("rimraf"),
+    rimraf = require("rimraf"),
+    sass = require("gulp-sass"),
   concat = require("gulp-concat"),
   cssmin = require("gulp-cssmin"),
   uglify = require("gulp-uglify"),
-  merge = require("merge-stream");
+    merge = require("merge-stream");
+
 
 
 var paths = {
@@ -37,7 +39,11 @@ paths.concatJsDest = paths.webroot + "js/site.min.js";
 paths.concatCssDest = paths.webroot + "css/site.min.css";
 
 //tasks
-
+gulp.task("compile", function () {
+    return gulp.src('./wwwroot/css/site.scss')
+        .pipe(sass())
+        .pipe(gulp.dest('wwwroot/css'));
+});
 gulp.task("clean:js", done => rimraf(paths.concatJsDest, done));
 gulp.task("clean:css", done => rimraf(paths.concatCssDest, done));
 gulp.task("clean", gulp.series(["clean:js", "clean:css"]));
@@ -56,8 +62,8 @@ gulp.task("min:css", () => {
     .pipe(gulp.dest("."));
 });
 
-gulp.task("min", gulp.series(["min:js", "min:css"]));
-
+gulp.task("min", gulp.series(["min:js"]));
+gulp.task("sass", gulp.series(["compile", "min:css"]));
 //
 gulp.task("scripts", function () {
 
